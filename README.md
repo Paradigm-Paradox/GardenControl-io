@@ -1,5 +1,9 @@
 # 🌱 GardenControl-io
 
+<p align="center">
+  <img src="logo.png" alt="GardenControl-io Logo" width="180">
+</p>
+
 [![Home Assistant Add-on](https://img.shields.io/badge/Home%20Assistant-Add--on-blue.svg)](https://www.home-assistant.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Architecture](https://img.shields.io/badge/arch-amd64%20%7C%20aarch64%20%7C%20armv7-green.svg)](https://github.com/Paradigm-Paradox/GardenControl-io)
