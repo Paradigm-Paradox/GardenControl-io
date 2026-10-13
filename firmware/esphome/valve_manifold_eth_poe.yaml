@@ -1,0 +1,123 @@
+substitutions:
+  name: "garden-valve-controller"
+  friendly_name: "Garden Valve Controller (Ethernet PoE)"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-poe
+  framework:
+    type: esp-idf
+
+# Hardwired 100Mbps Ethernet (Olimex ESP32-POE / LAN8720A PHY)
+ethernet:
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk_mode: GPIO17_OUT
+  phy_addr: 0
+  power_pin: GPIO12
+
+# Encrypted native Home Assistant API
+api:
+  encryption:
+    key: "!secret esphome_api_key"
+
+ota:
+  - platform: esphome
+
+logger:
+  level: INFO
+
+# Irrigation Valve Relays with Built-in Hardware Safety Timeout
+switch:
+  - platform: gpio
+    name: "Zone 1 Valve (Vegetables)"
+    id: valve_zone_1
+    pin: GPIO4
+    inverted: true
+    icon: "mdi:sprinkler-variant"
+    restore_mode: ALWAYS_OFF
+    # Hardware watchdog: turn off automatically after 45 minutes even if network drops
+    on_turn_on:
+      - delay: 45min
+      - switch.turn_off: valve_zone_1
+
+  - platform: gpio
+    name: "Zone 2 Valve (Herbs & Greens)"
+    id: valve_zone_2
+    pin: GPIO13
+    inverted: true
+    icon: "mdi:sprinkler-variant"
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 45min
+      - switch.turn_off: valve_zone_2
+
+  - platform: gpio
+    name: "Zone 3 Valve (Berries & Perennials)"
+    id: valve_zone_3
+    pin: GPIO14
+    inverted: true
+    icon: "mdi:sprinkler-variant"
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 45min
+      - switch.turn_off: valve_zone_3
+
+  - platform: gpio
+    name: "Zone 4 Valve (Orchard / Drip)"
+    id: valve_zone_4
+    pin: GPIO15
+    inverted: true
+    icon: "mdi:sprinkler-variant"
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 60min
+      - switch.turn_off: valve_zone_4
+
+  - platform: gpio
+    name: "Master Booster Pump Relay"
+    id: master_pump
+    pin: GPIO16
+    inverted: true
+    icon: "mdi:pump"
+    restore_mode: ALWAYS_OFF
+
+# Water Flow Meter & Line Pressure Sensors
+sensor:
+  # Hall effect pulse flow meter (e.g. YF-B5 or Digiten)
+  - platform: pulse_counter
+    pin: GPIO32
+    name: "Irrigation Flow Rate"
+    id: water_flow_rate
+    unit_of_measurement: "L/min"
+    icon: "mdi:water-pump"
+    update_interval: 5s
+    filters:
+      # Convert pulses/min to L/min (approx 450 pulses per liter for YF-B5)
+      - multiply: 0.00222
+
+  # Totalized volume
+  - platform: total_daily_energy
+    name: "Water Consumed Today"
+    power_id: water_flow_rate
+    unit_of_measurement: "L"
+    icon: "mdi:water"
+
+  # Analog Water Pressure Transducer (0-1.2 MPa, 0.5V - 4.5V scaled via divider)
+  - platform: adc
+    pin: GPIO35
+    name: "Irrigation Line Pressure"
+    id: water_pressure
+    unit_of_measurement: "PSI"
+    icon: "mdi:gauge"
+    update_interval: 5s
+    attenuation: 11db
+    filters:
+      # Calibrated 0.5V=0 PSI, 3.3V=150 PSI
+      - calibrate_linear:
+          - 0.5 -> 0.0
+          - 2.8 -> 120.0

@@ -20,6 +20,7 @@
 - **🍅 Biological Crop Lifecycle Tracker**: Track days-to-maturity, growth stages, and companion planting compatibility (beneficial pairings and antagonist warnings).
 - **🏡 Home Assistant Native**: Full Ingress dashboard in the HA sidebar, automatic MQTT entity discovery (`valves`, `sensors`, `switches`), and Supervisor API coordination.
 - **⚡ Homestead Ecosystem Aware**: Native interlocks with **SoilSense-io** (soil sensors), **WaterTankControl-io** (cistern water levels), and **SolarControl-io** (solar pump synchronization).
+- **📡 Multi-Mode ESP32 Field Hardware**: First-class support for low-cost, energy-efficient **ESP32** microcontrollers across **Ethernet (PoE)**, **2.4 GHz Wi-Fi (Solar Deep Sleep)**, and **Bluetooth Low Energy (BLE)** sensors with ready-to-flash ESPHome recipes in [`firmware/`](firmware/).
 
 ---
 
@@ -46,7 +47,11 @@
 +------------------+       +-------------------+       +-------------------+
 ```
 
-For complete architectural diagrams and design specifications, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DESIGN.md](docs/DESIGN.md).
+For complete architectural diagrams, hardware schematics, and design specifications:
+- [System Architecture (docs/ARCHITECTURE.md)](docs/ARCHITECTURE.md)
+- [Functional Design Specification (docs/DESIGN.md)](docs/DESIGN.md)
+- [ESP32 Hardware & Wiring Blueprint (docs/HARDWARE_ESP32.md)](docs/HARDWARE_ESP32.md)
+- [Ready-to-flash ESPHome Firmware Recipes (firmware/)](firmware/)
 
 ---
 

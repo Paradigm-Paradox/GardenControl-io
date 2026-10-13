@@ -85,3 +85,23 @@ flowchart TD
 ### 2.4 Home Assistant & MQTT Integration (`app/engine/ha_client.py`, `app/engine/mqtt.py`)
 - Automatic discovery for all garden zones as standard Home Assistant entities (`switch`, `valve`, `sensor`, `number`).
 - Direct service calls to Home Assistant Core for triggering switches, pumps, and solenoids.
+
+---
+
+## 3. Distributed ESP32 Field Hardware Tier
+
+GardenControl-io orchestrates field operations across diverse **ESP32** microcontrollers leveraging Wi-Fi, Ethernet, and Bluetooth Low Energy:
+
+1. **Mission-Critical Valve Banks (Ethernet PoE)**:
+   - Hardware: **Olimex ESP32-POE** or **WT32-ETH01** running ESPHome.
+   - Zero Wi-Fi dropout risk, powered directly over Cat6 Ethernet.
+   - Controls multi-channel optocoupled 24VAC/12VDC solenoid relays, pulse water flow meter, and line pressure transducers.
+   - Autonomous on-board hardware watchdog timer (auto shut-off after 45m if network disconnects).
+2. **Solar Microclimate & Bed Nodes (Wi-Fi Deep Sleep)**:
+   - Hardware: **ESP32-C3 / ESP32-S3** with LiFePO4 or 18650 solar charging.
+   - Measures capacitive volumetric soil moisture (VWC %), waterproof DS18B20 soil temperature, and BME280 ambient climate.
+   - Switched sensor power rail eliminates capacitive probe corrosion and sustains months of battery life.
+3. **Bluetooth Proximity Gateways (BLE Scanner)**:
+   - Hardware: Standard **ESP32-WROOM** scanning local BLE advertisements from wireless garden beacons (e.g. Xiaomi Flora, SoilSense BLE, Inkbird) and proxying telemetry directly into Home Assistant.
+
+Detailed schematics, pinouts, and firmware configurations are available in [docs/HARDWARE_ESP32.md](HARDWARE_ESP32.md) and [`firmware/`](../firmware/).

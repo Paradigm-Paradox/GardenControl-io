@@ -1,0 +1,93 @@
+substitutions:
+  name: "garden-bed-node-1"
+  friendly_name: "Garden Bed #1 Sensor Node (Solar Wi-Fi)"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Deep sleep configuration: 30 minutes sleep, wake up to read and transmit
+deep_sleep:
+  run_duration: 20s
+  sleep_duration: 30min
+  id: deep_sleep_component
+
+wifi:
+  ssid: "!secret wifi_ssid"
+  password: "!secret wifi_password"
+  fast_connect: true
+
+api:
+  encryption:
+    key: "!secret esphome_api_key"
+
+logger:
+  level: INFO
+
+# I2C Bus for BME280 microclimate sensor
+i2c:
+  sda: GPIO4
+  scl: GPIO5
+  scan: true
+
+# OneWire Bus for DS18B20 waterproof soil temp probe
+one_wire:
+  - platform: gpio
+    pin: GPIO6
+    id: onewire_bus
+
+# Switched sensor power: GPIO pin provides VCC only during measurement to stop probe corrosion
+output:
+  - platform: gpio
+    pin: GPIO7
+    id: sensor_power_pin
+
+sensor:
+  # Capacitive Soil Moisture Sensor (Analog VWC)
+  - platform: adc
+    pin: GPIO0
+    name: "Bed 1 Soil Moisture (VWC)"
+    id: soil_moisture
+    unit_of_measurement: "%"
+    icon: "mdi:water-percent"
+    attenuation: 11db
+    filters:
+      # Calibrate: In dry air ~ 2.8V (0%), in cup of water ~ 1.2V (100%)
+      - calibrate_linear:
+          - 2.8 -> 0.0
+          - 1.2 -> 100.0
+      - clamp_min: 0.0
+      - clamp_max: 100.0
+
+  # Waterproof Soil Temperature Probe (DS18B20)
+  - platform: dallas_temp
+    one_wire_id: onewire_bus
+    name: "Bed 1 Soil Temperature"
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer"
+
+  # Ambient Air Microclimate (BME280)
+  - platform: bme280_i2c
+    temperature:
+      name: "Bed 1 Air Temperature"
+    humidity:
+      name: "Bed 1 Air Humidity"
+    pressure:
+      name: "Bed 1 Barometric Pressure"
+    address: 0x76
+
+  # Battery Voltage Monitor (Solar / 18650 LiFePO4)
+  - platform: adc
+    pin: GPIO1
+    name: "Node Battery Voltage"
+    unit_of_measurement: "V"
+    icon: "mdi:battery"
+    attenuation: 11db
+    filters:
+      # Voltage divider 2:1 (100k / 100k)
+      - multiply: 2.0

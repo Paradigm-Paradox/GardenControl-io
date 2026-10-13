@@ -1,0 +1,41 @@
+substitutions:
+  name: "garden-ble-gateway"
+  friendly_name: "Garden BLE Soil Gateway"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+wifi:
+  ssid: "!secret wifi_ssid"
+  password: "!secret wifi_password"
+
+api:
+  encryption:
+    key: "!secret esphome_api_key"
+
+logger:
+  level: INFO
+
+# Bluetooth Low Energy Active Tracker
+esp32_ble_tracker:
+
+sensor:
+  # Xiaomi Flower Care / HHCC Flora BLE Garden Probes
+  - platform: xiaomi_hhccjcy01
+    mac_address: "C4:7C:8D:67:XX:XX"
+    temperature:
+      name: "Herb Bed Soil Temperature (BLE)"
+    moisture:
+      name: "Herb Bed Soil Moisture (BLE)"
+    illuminance:
+      name: "Herb Bed Sunlight (Lux)"
+    conductivity:
+      name: "Herb Bed Soil Fertility (EC)"
+    battery_level:
+      name: "Herb Bed Sensor Battery"
